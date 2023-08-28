@@ -8,8 +8,8 @@ require_once($CFG->dirroot . "/test/form.php");
 $PAGE->set_url(new moodle_url('/test/index.php'));
 $PAGE->set_context(context_system::instance());
 
-$PAGE->set_title('JUANPAS');
-$PAGE->set_heading('JUANPA');
+$PAGE->set_title('Registro de usuarios y matriculación');
+$PAGE->set_heading('Matricula usuarios como quieras');
 
 $mform = new simplehtml_form();
 
@@ -17,32 +17,63 @@ if ($mform->is_cancelled()) {
     $cancelado = $CFG->wwwroot . "/test/index.php";
     redirect($cancelado, 'Has cancelado el envío de datos', null, \core\output\notification::NOTIFY_WARNING);
 } else {
-    echo $OUTPUT->header();
-    $mform->display();
-
     if ($fromform = $mform->get_data()) {
-        // Crear un nuevo usuario en la base de datos de Moodle.
+        // Crear un nuevo usuario en la tabla mdl_user
         $user = new stdClass();
         $user->auth = 'manual';
         $user->confirmed = 1;
+        $user->password = $fromform->password;
+        $user->policyagreed = 0;
+        $user->deleted = 0;
+        $user->suspended = 0;
+        $user->mnethostid = 0;
+        $user->username = $fromform->username;
+        $user->idnumber = '';
+        $user->firstname = $fromform->firstname;
+        $user->lastname = $fromform->lastname;
+        $user->email = $fromform->email;
+        $user->emailstop = 0;
+        $user->phone1 = $fromform->phone;
+        $user->phone2 = '';
+        $user->institution = '';
+        $user->department = '';
+        $user->address = '';
+        $user->city = $fromform->city;
+        $user->country = $fromform->country;
+        $user->lang = 'en';
+        $user->calendartype = 'gregorian';
+        $user->theme = '';
+        $user->timezone = '99';
+        $user->firstaccess = time();
+        $user->lastaccess = 0;
+        $user->lastlogin = 0;
+        $user->currentlogin = 0;
+        $user->lastip = '';
+        $user->secret = '';
+        $user->picture = 0;
+        $user->description = $fromform->description;
+        $user->descriptionformat = 1;
+        $user->mailformat = 1;
+        $user->maildigest = 0;
+        $user->maildisplay = 2;
+        $user->autosubscribe = 1;
+        $user->trackforums = 0;
+        $user->timecreated = time();
+        $user->timemodified = time();
+        $user->trustbitmask = 0;
+        $user->imagealt = '';
+        $user->lastnamephonetic = '';
+        $user->firstnamephonetic = '';
+        $user->middlename = '';
+        $user->alternatename = '';
+        $user->moodlenetprofile = '';
 
-        // Campos de usuario
-        $user->username = $fromform->username; // Nombre de usuario
-        $user->password = ''; // Debes manejar el cifrado y almacenamiento de la contraseña aquí.
-        $user->firstname = $fromform->firstname; // Nombre
-        $user->lastname = $fromform->lastname; // Apellido
-        $user->email = $fromform->email; // Correo electrónico
-
-        // Otras configuraciones de usuario aquí...
-
-        // Insertar el usuario en la tabla de usuarios.
         $user_id = $DB->insert_record('user', $user);
 
         if ($user_id) {
-            // Obtener el ID del curso desde el formulario.
             $course_id = $fromform->course_id;
 
-            // Matricular al usuario en el curso.
+            // Matriculando en un curso. Esto tiene que ver con la tabla mdl_enrol
             $enrol = $DB->get_record('enrol', ['courseid' => $course_id, 'enrol' => 'manual'], '*', MUST_EXIST);
             $enrolment = new stdClass();
             $enrolment->enrolid = $enrol->id;
@@ -52,19 +83,19 @@ if ($mform->is_cancelled()) {
             $enrolment->modifierid = $USER->id;
 
             if ($DB->insert_record('user_enrolments', $enrolment)) {
-                echo "El usuario ha sido matriculado en el curso con éxito.";
+                // Redirigir después de completar el proceso
+                $redirigir = $CFG->wwwroot . "/test/index.php";
+                redirect($redirigir, 'Se ha enviado la información correctamente', null, \core\output\notification::NOTIFY_SUCCESS);
             } else {
                 echo "Error al matricular al usuario en el curso.";
             }
         } else {
             echo "Error al insertar el usuario en la base de datos.";
         }
-
-        // Redirigir antes de enviar cualquier contenido al navegador.
-        $redirigir = $CFG->wwwroot . "/test/index.php";
-        redirect($redirigir, 'Se ha enviado la información correctamente', null, \core\output\notification::NOTIFY_SUCCESS);
     }
 
+    echo $OUTPUT->header();
+    $mform->display();
     echo $OUTPUT->footer();
 }
 ?>
