@@ -37,6 +37,10 @@ Asegúrate de tener instalado lo siguiente antes de ejecutar este proyecto:
 
 Si deseas contribuir a este proyecto, ¡siéntete libre de hacerlo! Puedes enviar problemas (issues) y solicitudes de extracción (pull requests) en GitHub.
 
+## Screedshop
+![Example](./img/users.png)
+
+
 ## Licencia
 
 Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para obtener más detalles.
