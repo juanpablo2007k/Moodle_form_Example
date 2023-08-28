@@ -83,7 +83,7 @@ if ($mform->is_cancelled()) {
             $enrolment->modifierid = $USER->id;
 
             if ($DB->insert_record('user_enrolments', $enrolment)) {
-                // Redirigir después de completar el proceso
+                //me redirije despues de hacer la insercion de datos
                 $redirigir = $CFG->wwwroot . "/test/index.php";
                 redirect($redirigir, 'Se ha enviado la información correctamente', null, \core\output\notification::NOTIFY_SUCCESS);
             } else {
